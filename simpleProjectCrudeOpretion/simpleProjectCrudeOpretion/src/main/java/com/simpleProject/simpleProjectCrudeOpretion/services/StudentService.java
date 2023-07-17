@@ -1,15 +1,9 @@
 package com.simpleProject.simpleProjectCrudeOpretion.services;
 
-import com.simpleProject.simpleProjectCrudeOpretion.entities.Address;
-import com.simpleProject.simpleProjectCrudeOpretion.entities.Laptop;
+import com.simpleProject.simpleProjectCrudeOpretion.entities.Course;
 import com.simpleProject.simpleProjectCrudeOpretion.entities.Student;
-import com.simpleProject.simpleProjectCrudeOpretion.entities.User;
-import com.simpleProject.simpleProjectCrudeOpretion.models.LaptopModel;
-import com.simpleProject.simpleProjectCrudeOpretion.models.StudentModel;
-import com.simpleProject.simpleProjectCrudeOpretion.models.UserModel;
-import com.simpleProject.simpleProjectCrudeOpretion.repositories.AddressRepository;
+import com.simpleProject.simpleProjectCrudeOpretion.model.StudentModel;
 import com.simpleProject.simpleProjectCrudeOpretion.repositories.StudentRepository;
-import com.simpleProject.simpleProjectCrudeOpretion.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,55 +15,35 @@ import java.util.List;
 
 @Service
 public class StudentService {
+
     @Autowired
     StudentRepository studentRepository;
-    @Autowired
-    AddressRepository addressRepository;
-
-    @Autowired
-    UserRepository userRepository;
 
     @Transactional
-    public ResponseEntity saveStudentDetails(StudentModel studentModel) {
+    public ResponseEntity saveStudentDetailsManyToManyBiDirectional(StudentModel studentModel) {
+        List<Student> studentList = new ArrayList<>();
         Student student = new Student();
-        student.setStudentEmail(studentModel.getStudentEmail());
-        student.setStudentName(studentModel.getStudentName());
-        student.setStudentAddress(studentModel.getStudentAddress());
+        student.setStudentAge(studentModel.getStudentAge());
         student.setStudentId(studentModel.getStudentId());
+        student.setStudentName(studentModel.getStudentName());
+        student.setStudentEmail(studentModel.getStudentEmail());
+        student.setStudentAddress(studentModel.getStudentAddress());
         student.setStudentMobileNumber(studentModel.getStudentMobileNumber());
+        studentList.add(student);
 
-        List<Address> addresses = new ArrayList<>();
-        studentModel.getAddressModels().stream().forEach(data->{
-            Address address = new Address();
-            address.setCurrentAddress(data.getCurrentAddress());
-            address.setPermanentAddress(data.getPermanentAddress());
-            address.setAddressId(data.getAddressId());
+        List<Course> courseList = new ArrayList<>();
+        studentModel.getCourseModels().stream().forEach(data->{
+            Course course = new Course();
+            course.setCoursePrice(data.getCoursePrice());
+            course.setCourseName(data.getCourseName());
+            course.setCourseDuration(data.getCourseDuration());
+            course.setCourseId(data.getCourseId());
 
-            addresses.add(address);
+            courseList.add(course);
         });
-        student.setAddresses(addresses);
+        student.setCourses(courseList);
 
-        studentRepository.save(student);
-        return new ResponseEntity<>("saved Student Details mapping bidirectional", HttpStatus.OK);
-    }
-
-    @Transactional
-    public ResponseEntity saveUserDetails(UserModel userModel) {
-        User user = new User();
-        user.setUserAddress(userModel.getUserAddress());
-        user.setUserId(userModel.getUserId());
-        user.setUserName(userModel.getUserName());
-        user.setUserMobileNumber(userModel.getUserMobileNumber());
-
-        Laptop laptop = new Laptop();
-        laptop.setLaptopRom(userModel.getLaptopModel().getLaptopRom());
-        laptop.setLaptopRam(userModel.getLaptopModel().getLaptopRam());
-        laptop.setLaptopId(userModel.getLaptopModel().getLaptopId());
-        laptop.setLaptopModel(userModel.getLaptopModel().getLaptopModel());
-
-        user.setLaptop(laptop);
-
-        userRepository.save(user);
-        return new ResponseEntity<>("saved User Details biDirection Mapping using ", HttpStatus.OK);
+        studentRepository.saveAll(studentList);
+        return new ResponseEntity<>("Save Student Details Many to Many BiDirectional Using Mapping ", HttpStatus.OK);
     }
 }

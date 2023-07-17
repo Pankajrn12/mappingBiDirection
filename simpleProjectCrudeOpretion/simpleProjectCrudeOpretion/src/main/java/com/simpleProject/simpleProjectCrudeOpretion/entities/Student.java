@@ -12,12 +12,17 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long studentId;
     private String studentName;
+    private String studentAge;
     private String studentMobileNumber;
-    private String studentAddress;
     private String studentEmail;
-
-    @OneToMany(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "student")
-    private List<Address> addresses;
-
+    private String studentAddress;
+//    @ManyToMany( cascade = CascadeType.ALL)
+//    @JoinColumn(name = "course_id")
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+        name = "student_course",
+        joinColumns = @JoinColumn(name = "student_id"),
+        inverseJoinColumns = @JoinColumn(name = "course_id")
+)
+    private List<Course> courses;
 }
